@@ -30,6 +30,9 @@ BEGIN_MESSAGE_MAP(CPraticeMFCView, CView)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_KEYDOWN()
 	ON_WM_LBUTTONUP()
+	ON_WM_CREATE()
+	ON_WM_DESTROY()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -39,13 +42,35 @@ END_MESSAGE_MAP()
 
 CPraticeMFCView::CPraticeMFCView()
 {
-
-
+	//AfxMessageBox(L"윈도우 생성");
 }
 
 CPraticeMFCView::~CPraticeMFCView()
 {
+	//AfxMessageBox(L"윈도우 소멸");
+	//delete m_week2;
 }
+
+
+int CPraticeMFCView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if(CView::OnCreate(lpCreateStruct) == -1)
+	{	
+		return -1;
+	}
+	AfxMessageBox(L"윈도우가 생성되었습니다.");
+	return 0;
+
+}
+
+void CPraticeMFCView::OnDestroy()
+{
+	AfxMessageBox(L"윈도우가 종료되었습니다.");
+	CView::OnDestroy();
+
+	KillTimer(m_timer);
+}
+
 
 
 
@@ -65,8 +90,11 @@ void CPraticeMFCView::OnInitialUpdate()
 	m_drag = FALSE;
 	m_edit.Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(10, 10, 500, 40), this, 1);
 	m_edit2.Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(10, 90, 500, 120), this, 2);
-	m_edit3.Create(WS_CHILD | WS_VISIBLE, CRect(10, 200, 500, 300), this, 3);
-	setText();
+	m_edit3.Create(WS_CHILD | WS_VISIBLE, CRect(10, 150, 300, 180), this, 3);
+	SetText();
+
+	m_timer = NULL;
+
 }
 
 void CPraticeMFCView::OnSize(UINT nType, int cx, int cy)
@@ -79,40 +107,42 @@ void CPraticeMFCView::OnSize(UINT nType, int cx, int cy)
 
 	if(m_edit.GetSafeHwnd())
 	{
-		setText();
+		SetText();
 	}
 
-
-
-// CPraticeMFCView 그리기
 }
 
 void CPraticeMFCView::OnMouseMove(UINT nFlags, CPoint point)
 {
-	m_pos = point;
-	Invalidate();
-	if(m_drag == TRUE)
-	{
-		setText2(L"드래그 중");
-	}
-	else if(m_drag == FALSE)
-	{
-		setText2(L"마우스를 이동중");
-	}
-	CView::OnMouseMove(nFlags, point);
-}
+// 	m_pos = point;
+// 	Invalidate();
+// 	if(m_drag == TRUE)
+// 	{
+// 		SetText2(L"드래그 중");
+// 	}
+// 	else if(m_drag == FALSE)
+// 	{	
+// 		SetText2(L"마우스를 이동중");
+// 	}
+// 	CView::OnMouseMove(nFlags, point);
+}	
+
 
 void CPraticeMFCView::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	m_drag = TRUE;
-	setText2(L"왼쪽 마우스 클릭");
-	CView::OnLButtonDown(nFlags, point);
+// 	m_drag = TRUE;
+// 	SetText2(L"왼쪽 마우스 클릭");
+// 	CView::OnLButtonDown(nFlags, point);
+	m_timer = SetTimer(1, 1000, NULL);
+	DrawTimer();
 }
 
 void CPraticeMFCView::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	setText2(L"오른쪽 마우스 클릭");
-	CView::OnRButtonDown(nFlags, point);
+// 	SetText2(L"오른쪽 마우스 클릭");
+// 	CView::OnRButtonDown(nFlags, point);
+	KillTimer(m_timer);
+	SetText2(L"");
 }
 
 
@@ -121,7 +151,7 @@ void CPraticeMFCView::OnLButtonUp(UINT nFlags, CPoint point)
 	if(m_drag == TRUE)
 	{
 		m_drag = FALSE;
-		setText2(L"마우스를 이동중");
+		SetText2(L"마우스를 이동중");
 		
 	}
 	CView::OnLButtonUp(nFlags, point);
@@ -130,27 +160,152 @@ void CPraticeMFCView::OnLButtonUp(UINT nFlags, CPoint point)
 void CPraticeMFCView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	CString tem;
-	tem.Format(L"%d 키다운", nChar);
-	setText2(tem);
+	//tem.Format(L"%d 키다운", nChar);
+	//SetText2(tem);
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+
+	if(nChar == 37 || nChar == 38 || nChar == 39 || nChar == 40)
+	{
+		CRect rect;
+		m_edit3.GetWindowRect(&rect);
+		ScreenToClient(&rect);
+
+		CRect clientRect;
+		GetClientRect(&clientRect);
+
+		int x, y, x2, y2;
+
+		if(m_timer != NULL)
+		{
+
+			if(nChar == 37)
+			{
+				rect.OffsetRect(-5, 0);
+
+				x = rect.left;
+				y = rect.top;
+
+				if(x < 10)
+				{
+					AfxMessageBox(L"더이상 왼쪽으로 이동할 수 없습니다!");
+				}
+				else
+				{
+					m_edit3.MoveWindow(&rect);
+				}
+				
+		
+			}
+			if(nChar == 38)
+			{
+				rect.OffsetRect(0, -10);
+
+				x = rect.left;
+				y = rect.top;
+
+				if(y < 0)
+				{
+					AfxMessageBox(L"더이상 위쪽으로 이동할 수 없습니다!");
+				}
+				else
+				{
+					m_edit3.MoveWindow(&rect);
+				}
+
+
+			}
+			if(nChar == 39)
+			{
+
+				rect.OffsetRect(5, 0);
+
+				x2 = clientRect.right;
+				y2 = clientRect.bottom;
+
+				x = rect.right;
+				y = rect.top;
+
+				if(x > x2)
+				{
+					AfxMessageBox(L"더이상 오른쪽으로 이동할 수 없습니다!");
+				}
+				else
+				{
+					m_edit3.MoveWindow(&rect);
+				}
+
+			
+			}
+			if(nChar == 40)
+			{
+				rect.OffsetRect(0, 5);
+
+				x2 = clientRect.right;
+				y2 = clientRect.bottom;
+
+				x = rect.right;
+				y = rect.bottom;
+
+				if(y > y2)
+				{
+					AfxMessageBox(L"더이상 아래쪽으로 이동할 수 없습니다!");
+				}
+				else
+				{
+					m_edit3.MoveWindow(&rect);
+				}
+
+			
+			}	
+		}
+	}
 }
 
-void CPraticeMFCView::setText()
-{
+void CPraticeMFCView::SetText()
+{	
 	CString temp;
 	temp.Format(L"윈도우 크기의 너비는 %d, 높이는 %d, 넓이는 %d입니다.", width, height, width*height);
 	m_edit.SetWindowText(temp);
 }
 
-void CPraticeMFCView::setText2(CString str)
+void CPraticeMFCView::SetText2(CString str)
 {
 	CString temp;
-	temp.Format(L"%s 입니다.", str);
+	temp.Format(L"%s", str);
 	m_edit3.SetWindowText(temp);
+}
+
+void CPraticeMFCView::DrawTimer()
+{
+	if(m_timer != NULL)
+	{
+		CTime cTime = CTime::GetCurrentTime();
+
+		CString strTime;
+		strTime.Format(_T("현재는 %04d년 %02d월 %02d일 %02d시 %02d분 %02d초"),
+			cTime.GetYear(),
+			cTime.GetMonth(),
+			cTime.GetDay(),
+			cTime.GetHour(),
+			cTime.GetMinute(),
+			cTime.GetSecond());
+
+		SetText2(strTime);
+	}
+}
+
+void CPraticeMFCView::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == m_timer)
+	{
+		Invalidate();
+	}
+	CView::OnTimer(nIDEvent);
 }
 
 void CPraticeMFCView::OnDraw(CDC* /*pDC*/)
 {
+	
 	CPraticeMFCDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
@@ -161,6 +316,9 @@ void CPraticeMFCView::OnDraw(CDC* /*pDC*/)
 	m_edit2.SetWindowText(strPoint);
 
 	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
+
+	DrawTimer();
+
 }
 
 

@@ -6,6 +6,7 @@
 #pragma once
 
 
+
 class CPraticeMFCView : public CView
 {
 protected: // serialization에서만 만들어집니다.
@@ -28,6 +29,10 @@ public:
 	CEdit	m_edit3;
 	CPoint	m_pos;
 	BOOL	m_drag;
+
+	//CWeek2 m_week2;
+	
+
 	void	OnInitialUpdate();
 	void	OnSize(UINT nType, int cx, int cy);
 	void	OnMouseMove(UINT nFlags, CPoint point);
@@ -36,8 +41,14 @@ public:
 	void	OnLButtonUp(UINT nFlags, CPoint point);
 	void	OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
-	void	setText();
-	void	setText2(CString str);
+	void	SetText();
+	void	SetText2(CString str);
+	void	DrawTimer();
+
+	void	OnTimer(UINT_PTR nIDEvent);
+
+
+	UINT_PTR m_timer;
 
 // 재정의입니다.
 public:
@@ -48,6 +59,9 @@ protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
+
+	afx_msg int			 OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void		 OnDestroy();
 
 // 구현입니다.
 public:

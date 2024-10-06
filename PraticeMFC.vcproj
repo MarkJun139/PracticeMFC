@@ -221,6 +221,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Week2.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="헤더 파일"
@@ -253,6 +257,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Week2.h"
 				>
 			</File>
 		</Filter>
