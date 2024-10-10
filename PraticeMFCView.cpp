@@ -8,6 +8,7 @@
 #include "PraticeMFCDoc.h"
 #include "PraticeMFCView.h"
 
+#include "Dialog1.h"
 
 
 #ifdef _DEBUG
@@ -58,14 +59,16 @@ int CPraticeMFCView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{	
 		return -1;
 	}
-	AfxMessageBox(L"윈도우가 생성되었습니다.");
+	//AfxMessageBox(L"윈도우가 생성되었습니다.");
+	
+	
 	return 0;
 
 }
 
 void CPraticeMFCView::OnDestroy()
 {
-	AfxMessageBox(L"윈도우가 종료되었습니다.");
+	//AfxMessageBox(L"윈도우가 종료되었습니다.");
 	CView::OnDestroy();
 
 	KillTimer(m_timer);
@@ -94,6 +97,12 @@ void CPraticeMFCView::OnInitialUpdate()
 	SetText();
 
 	m_timer = NULL;
+
+
+	Dialog1 dlg;
+	dlg.DoModal();
+
+
 
 }
 
